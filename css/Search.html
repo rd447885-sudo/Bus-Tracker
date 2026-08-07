@@ -1,11 +1,11 @@
-*About*
+*Search*
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Us - Bus Tracker</title>
-  <meta name="description" content="Learn about Bus Tracker, our mission to improve daily public transport for commuters, students, and tourists.">
+  <title>Search Buses - Bus Tracker</title>
+  <meta name="description" content="Search buses by number, route, origin, or destination. View real-time estimated arrival times and live bus status.">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
@@ -22,9 +22,9 @@
 
       <nav class="nav-links" id="navLinks">
         <a href="index.html" class="nav-link">Home</a>
-        <a href="search.html" class="nav-link">Search</a>
+        <a href="search.html" class="nav-link active">Search</a>
         <a href="index.html#routes" class="nav-link">Routes</a>
-        <a href="about.html" class="nav-link active">About</a>
+        <a href="about.html" class="nav-link">About</a>
         <a href="contact.html" class="nav-link">Contact</a>
       </nav>
 
@@ -39,11 +39,11 @@
     </div>
   </header>
 
-  <section class="section" style="background-color: var(--white); border-bottom: 1px solid var(--border); padding: 50px 0;">
+  <section class="section" style="background-color: var(--white); border-bottom: 1px solid var(--border); padding: 40px 0;">
     <div class="container">
-      <div class="section-header" style="margin-bottom: 0; text-align: center;">
-        <h1>About Bus Tracker Project</h1>
-        <p>A simple, handcrafted public transport tracking website built with modern HTML5, CSS3, and Vanilla JavaScript.</p>
+      <div class="section-header" style="margin-bottom: 0; text-align: left;">
+        <h1>Search Buses & Routes</h1>
+        <p>Find estimated arrival times, live stops, and status for all active transit buses.</p>
       </div>
     </div>
   </section>
@@ -51,61 +51,68 @@
   <section class="section">
     <div class="container">
       
-      <div class="hero-grid" style="margin-bottom: 50px;">
-        <div>
-          <h2>Our Mission</h2>
-          <p style="margin-bottom: 16px;">Bus Tracker was created to provide a simple, clean, and reliable interface for commuters to track city bus routes, estimated arrival times, and live bus statuses.</p>
-          <p>Whether you are a daily commuter heading to work, a college student reaching campus, or a tourist exploring the city, our application eliminates transit uncertainty by providing live updates right at your fingertips.</p>
-        </div>
-        <div class="search-box">
-          <h2 style="font-size: 18px; margin-bottom: 16px;">Key Statistics</h2>
-          <div class="modal-info-grid">
-            <div class="info-item">
-              <label>Active Buses</label>
-              <span style="color: var(--primary); font-size: 20px;">50+ Buses</span>
-            </div>
-            <div class="info-item">
-              <label>Covered Routes</label>
-              <span style="color: var(--primary); font-size: 20px;">20+ Routes</span>
-            </div>
-            <div class="info-item">
-              <label>Daily Commuters</label>
-              <span style="color: var(--primary); font-size: 20px;">10,000+</span>
-            </div>
-            <div class="info-item">
-              <label>Update Rate</label>
-              <span style="color: var(--success); font-size: 20px;">Every 10s</span>
-            </div>
+      <div class="search-box" style="margin-bottom: 30px;">
+        <form class="search-form" id="searchPageForm" onsubmit="event.preventDefault(); filterBuses();">
+          <div class="form-group">
+            <label for="searchBusNumber">Bus Number / Keyword</label>
+            <input type="text" id="searchBusNumber" class="form-control" placeholder="Enter Bus Number (e.g. 201, 78)">
           </div>
-        </div>
+          <div class="form-group">
+            <label for="searchSource">Source Station</label>
+            <select id="searchSource" class="form-control">
+              <option value="">All Sources</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="searchDestination">Destination Station</label>
+            <select id="searchDestination" class="form-control">
+              <option value="">All Destinations</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <button type="button" id="searchBtn" class="btn btn-primary btn-block">Filter Buses</button>
+          </div>
+        </form>
       </div>
 
-      <div class="section-header">
-        <h2>Who We Serve</h2>
-        <p>Designed to solve everyday commuting challenges for everyone.</p>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <h2>Live Search Results</h2>
+        <span id="searchResultCount" style="font-size: 14px; font-weight: 600; color: var(--secondary);">Showing active buses</span>
       </div>
 
-      <div class="features-grid">
-        <div class="feature-card">
-          <h3>Daily Commuters</h3>
-          <p>Never miss your morning or evening bus again with precise arrival predictions.</p>
-        </div>
-        <div class="feature-card">
-          <h3>College Students</h3>
-          <p>Plan your commute between university campus halls and local train stations effortlessly.</p>
-        </div>
-        <div class="feature-card">
-          <h3>Office Employees</h3>
-          <p>Save valuable time during rush hours with real-time route status notifications.</p>
-        </div>
-        <div class="feature-card">
-          <h3>Tourists &amp; Visitors</h3>
-          <p>Navigate unfamiliar city routes confidently with clear stop-by-stop guides.</p>
-        </div>
+      <div class="table-wrapper">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Bus Number</th>
+              <th>Route</th>
+              <th>Current Stop</th>
+              <th>Arrival Time</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="searchResultsContainer">
+          </tbody>
+        </table>
       </div>
 
     </div>
   </section>
+
+  <div class="modal-overlay" id="busModalOverlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalBusTitle">Bus Details</h3>
+        <button class="modal-close" id="busModalClose">&times;</button>
+      </div>
+      <div class="modal-body" id="modalBusBody">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="busModalFooterClose">Close</button>
+      </div>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="container">
@@ -117,7 +124,7 @@
             </svg>
             <span>Bus Tracker</span>
           </a>
-          <p>Clean and reliable public transport tracking system for daily commuters, students, and tourists.</p>
+          <p>Handcrafted, real-time public transit tracking system built for easy commuter access.</p>
         </div>
         <div class="footer-col">
           <h4>Quick Links</h4>
@@ -150,5 +157,7 @@
   </footer>
 
   <script src="js/script.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/modal.js"></script>
 </body>
 </html>
